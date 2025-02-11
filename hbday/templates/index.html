@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday, My Love! ❤️</title>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            text-align: center;
+            background: linear-gradient(45deg, #6a1b9a, #8e24aa); /* Dark Purple to Dark Pink */
+            color: white;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-top: 50px;
+            animation: fadeIn 2s ease-in-out;
+        }
+        p {
+            font-size: 1.2rem;
+        }
+        .gallery {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            padding: 20px;
+        }
+        .gallery img {
+            width: 90%;
+            max-width: 200px;
+            border-radius: 10px;
+            box-shadow: 2px 2px 10px rgba(0,0,0,0.2);
+            transition: transform 0.3s;
+        }
+        .gallery img:hover {
+            transform: scale(1.1);
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        /* Floating Hearts */
+        .heart {
+            position: fixed;
+            bottom: -50px;
+            left: 50%;
+            color: red;
+            font-size: 20px;
+            animation: floatUp 5s linear infinite;
+            transform: translateX(-50%);
+        }
+        @keyframes floatUp {
+            0% { transform: translateY(0) scale(1); opacity: 1; }
+            100% { transform: translateY(-100vh) scale(1.5); opacity: 0; }
+        }
+        /* Fireworks Canvas */
+        canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+        }
+        /* Gift Button */
+        .gift-btn {
+            background-color: #ff477e;
+            color: white;
+            font-size: 1.5rem;
+            padding: 15px 25px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-top: 20px;
+            animation: fadeIn 2s ease-in-out;
+        }
+        .gift-btn:hover {
+            background-color: #ff2d6d;
+        }
+    </style>
+</head>
+<body>
+    <h1>Happy Birthday, My Love! 🎉❤️</h1>
+    <p>try clicking?! 🎆</p>
+    <p>
+        ok so i tried and idk if it worked but hope you remeber our deal
+    </p>
+
+    <div class="gallery">
+        <img src="{{ url_for('static', filename='riya1.jpeg') }}" alt="Memory 1">
+        <img src="{{ url_for('static', filename='riya.pft.jpeg') }}" alt="Memory 2">
+        <img src="{{ url_for('static', filename='riya2.jpeg') }}" alt="Memory 3">
+    </div>
+    
+    <a href="{{ url_for('gifts') }}">
+        <button class="gift-btn">🎁 Click to Open stupid Gifts</button>
+    </a>
+    
+    <canvas id="fireworksCanvas"></canvas>
+
+    <script>
+        // Fireworks Animation
+        const canvas = document.getElementById("fireworksCanvas");
+        const ctx = canvas.getContext("2d");
+
+        function setCanvasSize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        setCanvasSize();
+        window.addEventListener("resize", setCanvasSize);
+
+        function randomColor() {
+            return `hsl(${Math.random() * 360}, 100%, 50%)`;
+        }
+
+        class Firework {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.particles = [];
+                for (let i = 0; i < 30; i++) {
+                    this.particles.push({
+                        x: x,
+                        y: y,
+                        angle: Math.random() * 2 * Math.PI,
+                        speed: Math.random() * 3 + 1,
+                        color: randomColor(),
+                        life: 100
+                    });
+                }
+            }
+            update() {
+                this.particles.forEach(p => {
+                    p.x += Math.cos(p.angle) * p.speed;
+                    p.y += Math.sin(p.angle) * p.speed;
+                    p.life--;
+                });
+                this.particles = this.particles.filter(p => p.life > 0);
+            }
+            draw() {
+                this.particles.forEach(p => {
+                    ctx.fillStyle = p.color;
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, 3, 0, Math.PI * 2);
+                    ctx.fill();
+                });
+            }
+        }
+
+        let fireworks = [];
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            fireworks.forEach(f => {
+                f.update();
+                f.draw();
+            });
+            fireworks = fireworks.filter(f => f.particles.length > 0);
+            requestAnimationFrame(animate);
+        }
+
+        document.addEventListener("click", e => {
+            fireworks.push(new Firework(e.clientX, e.clientY));
+        });
+
+        animate();
+
+        // Gift Reveal Function
+        function showGifts() {
+            alert("🎉 Surprise! Your gift is... A lifetime of love and happiness with me! 💖");
+        }
+
+        // Floating Hearts Animation
+        function createHeart() {
+            const heart = document.createElement("div");
+            heart.innerHTML = "❤️";
+            heart.classList.add("heart");
+            document.body.appendChild(heart);
+
+            const size = Math.random() * 30 + 10 + "px";
+            heart.style.fontSize = size;
+            heart.style.left = Math.random() * window.innerWidth + "px";
+            heart.style.bottom = "-50px"; // Start from the bottom
+
+            heart.style.position = "absolute";
+            heart.style.animation = `floatUp ${Math.random() * 5 + 3}s linear forwards`;
+
+            setTimeout(() => { heart.remove(); }, 5000);
+        }
+
+        // Generate hearts at intervals
+        setInterval(createHeart, 400);
+    </script>
+</body>
+</html>
